@@ -7,7 +7,7 @@ const activeBots = JSON.parse(activeBotsData).activeBots;
 
 // Function to run each bot
 function runBot(botDir) {
-  const botProcess = spawn('node', [`${botDir}/bot${botDir}.js`]);
+  const botProcess = spawn('node', [`${botDir}.js`]);
 
   botProcess.stdout.on('data', (data) => {
     console.log(`[${botDir}] ${data}`);
@@ -19,4 +19,4 @@ function runBot(botDir) {
 }
 
 // Run each bot
-botDirectories.forEach(runBot);
+activeBots.forEach(runBot);

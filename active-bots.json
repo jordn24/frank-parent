@@ -1,8 +1,6 @@
 {
     "activeBots": [
-      "bot1",
-      "bot2",
-      "bot3"
+      "GasFeeBot/main"
     ]
   }
   
