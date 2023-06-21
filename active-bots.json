@@ -1,6 +1,7 @@
 {
     "activeBots": [
-      "GasFeeBot/main"
+      "GasFeeBot/main",
+      "AccountSharingBot/index"
     ]
   }
   

@@ -1,14 +1,15 @@
 require('dotenv').config();
 
-const axios = require('axios')
 const { Client, MessageEmbed } = require('discord.js');
-const { prefix } = require('./config.json');
+const APIHandler = require('../Core/APIHandler');
 
 const client = new Client();
 const token = process.env.BOT_TOKEN;
+const prefix = process.env.PREFIX;
 
 async function getCurrentGasPrices() {
-    let response = await axios.get('https://ethgasstation.info/json/ethgasAPI.json')
+    // Make a GET request
+    let response = await APIHandler.get(process.env.ETHGASFEESTATION_URL);
     let prices = {
         low: response.data.safeLow / 10,
         medium: response.data.average / 10,
@@ -18,10 +19,7 @@ async function getCurrentGasPrices() {
 }
 
 client.on('message', async message => {
-
-console.log(message.content)
     if (message.content.toLowerCase().includes(prefix + 'gas')) {
-	 console.log("It ran")
 	 getCurrentGasPrices().then((prices) => {
 
             const gasFeeEmbed = new MessageEmbed()
