@@ -1,14 +1,72 @@
-/*
+require('dotenv').config();
 
-    if (message.content.toLowerCase() === prefix + ' help'){
-        fields = [
-                {name: "Valorant Accounts In One Rank", value: "!val -rank [rank]"},
-                {name: "Valorant Accounts With Agent", value: "!val -agent [agent]"},
-                    ]
-        embed = new discord.MessageEmbed()
-            .setTitle("Val Commands")
-            .addFields(fields)
-        message.channel.send(embed)
+const { Client, MessageEmbed, MessageButton, InteractionCollector, Intents, MessageActionRow } = require('discord.js');
+
+const client = new Client({ 
+    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] 
+  });
+  
+const token = process.env.BOT_TOKEN;
+const prefix = process.env.FRANK_PREFIX;
+
+// When a message is received, run this code
+client.on('messageCreate', (message) => {
+    if (message.content === prefix + ' help') {
+        // Create buttons for options
+        const option1Button = new MessageButton()
+        .setCustomId('gasfeebot')
+        .setLabel('Gas Fee Bot')
+        .setStyle('PRIMARY');
+
+        const option2Button = new MessageButton()
+        .setCustomId('accountsharingbot')
+        .setLabel('Account Bot')
+        .setStyle('DANGER');
+        
+        const buttonRow = new MessageActionRow()
+        .addComponents(option1Button, option2Button);
+
+        const embed = new MessageEmbed()
+        .setColor('#0099ff')
+        .setTitle('Frank Help')
+
+        // Send the embed with the buttons as a message
+        message.channel.send({ components: [buttonRow] })
+        .then(sentMessage => {
+          // Create an interaction collector to listen for button clicks
+          const collector = new InteractionCollector(client, { message: sentMessage });
+  
+          // Event handler for button interactions
+          collector.on('collect', async (interaction) => {
+            if (interaction.isButton()) {
+              // Update the embed based on the clicked option
+              const clickedOption = interaction.customId;
+              embed.fields = [];
+  
+              switch (clickedOption) {
+                case 'gasfeebot':
+                    embed.setTitle("Gas Fee Bot");
+                    embed.addFields([
+                        {name: "Show ETH Gas Price", value: "!gas"},
+                    ]);
+                    embed.setColor('BLUE');
+                    break;
+                case 'accountsharingbot':
+                    embed.setTitle("Account Sharing Commands");
+                    embed.addFields([
+                        {name: "Valorant Accounts In One Rank", value: "!val -rank [rank]"},
+                    ]);
+                    embed.setColor('RED');
+                    break;
+              }
+  
+              // Update the embed message
+              await interaction.update({ embeds: [embed] });
+            }
+          });
+        });
     }
+  });
+  
 
-*/
+client.login(token)
