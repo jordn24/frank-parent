@@ -3,7 +3,8 @@
       "Common/Commands",
       "ValorantShamingBot/commands",
       "GasFeeBot/main",
-      "AccountSharingBot/index"
+      "AccountSharingBot/index",
+      "APIs/server"
     ]
   }
   

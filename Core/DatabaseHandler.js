@@ -36,7 +36,30 @@ class DatabaseHandler {
       console.error('Error getting users:', error);
       throw error;
     }
-  }  
+  }
+  
+  async updateUser(userId, fieldName, updatedValue) {
+    try {
+      const update = { [fieldName]: updatedValue };
+      const user = await User.findByIdAndUpdate(userId, update, { new: true }).exec();
+      return user;
+    } catch (error) {
+      console.error('Error updating user:', error);
+      throw error;
+    }
+  }
+  
+  async getUserByUsername(username) {
+    try {
+      let user = await User.findOne({["user"]: username}).exec();
+      return user;
+    } catch (error) {
+      console.error('Error getting user:', error);
+      throw error;
+    }
+  }
+
+  
 }
 
 module.exports = DatabaseHandler;

@@ -1,41 +1,73 @@
-const discord = require('discord.js')
-const fs = require('fs');
+require('dotenv').config();
 
-const { token, usernames, channelid, messages } = require('/home/ec2-user/git/valorantShamingBot/valorantShamingBot/config.json');
-const { latestMatch } = require('/home/ec2-user/git/valorantShamingBot/valorantShamingBot/data.json');
-const client = new discord.Client();
+const { Client, Intents} = require('discord.js');
 
-const { getLatestMatch, getPositionInMatch } = require('./valorantAPI');
+const { messages } = require('./messages.json');
+const DatabaseHandler = require('../Core/DatabaseHandler');
+const APIHandler = require('../Core/APIHandler');
 
-client.on('ready', async => {
+const client = new Client({ 
+    intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES] 
+  });
+
+const token = process.env.BOT_TOKEN;
+const channelid = process.env.GENERAL_CHANNEL_ID;
+
+const { getLatestMatch, getPositionInMatch } = require('../Core/Valorant');
+
+client.on('ready', async async => {
+
+    // Database Connection
+    const dbHandler = new DatabaseHandler(process.env.CONNECTION_URL);
+    await dbHandler.connect();
+
+    let users = await dbHandler.getUsers();
     // For every username
-    usernames.forEach((username) => {
+    users.forEach((user) => {
         // Check latest match
-        getLatestMatch(username.user, username.tag).then((match_id) => {
+        getLatestMatch(user.user, user.tag).then((match_id) => {
             // Get position in latest match
-            getPositionInMatch(match_id, username.user).then((pos) => {
-         	console.log(username.user)
-		console.log(pos)
-		// If position is last
-                if (pos === 10 && latestMatch[username.user] !== match_id) {
+            getPositionInMatch(match_id, user.user).then(async (position) => {
+		        // If position is last
+                // if (position === 10 && user.latest_match !== match_id) {
+                    
                     // Send message in general
-                    formatted_msg = "<@" + username.disc_id + "> " + messages[Math.floor(Math.random() * messages.length)]
-                    tracker_link = "https://tracker.gg/valorant/match/" + match_id + "?handle=" + username.user + "%23" + username.tag
+                    formatted_msg = "<@" + user.disc_id + "> " + messages[Math.floor(Math.random() * messages.length)]
+                    tracker_link = "https://tracker.gg/valorant/match/" + match_id + "?handle=" + encodeURIComponent(user.user) + "%23" + user.tag
+
                     // Send to channel id in config
                     client.channels.cache.get(channelid).send(formatted_msg)
-                    client.channels.cache.get(channelid).send(tracker_link)
-                    // update data json
-                    var data = require('/home/ec2-user/git/valorantShamingBot/valorantShamingBot/data.json');
+                    client.channels.cache.get(channelid).send(tracker_link)                                
+
+                    // Call Total Matches API to update DB
+                    let newActMatches = await APIHandler.post(process.env.WEB_TRACKERGG_API + process.env.WEB_TRACKERGG_ACT_URI + "?user=" + 
+                        user.user + "&tag=" + user.tag);
+
+                    let newTotalMatches = await APIHandler.post(process.env.WEB_TRACKERGG_API + process.env.WEB_TRACKERGG_TOT_URI+ "?user=" + 
+                        user.user + "&tag=" + user.tag);
+
+                    // Calculate new percentage
+                    let newPercentage = (( (parseInt(user.score) + 1) / parseInt(newActMatches.data)) * 100)
+                    let newAllTimePercentage = (( (parseInt(user.all_time_score) + 1) / parseInt(newTotalMatches.data)) * 100)
+                    
+                    if(user.score == 0){
+                        newPercentage = 0;
+                    }
+                    if(user.all_time_score == 0){
+                        newAllTimePercentage = 0;
+                    }
+                    
+                    // Update Mongo DB
+                    await dbHandler.updateUser(user._id, "score", (parseInt(user.score) + 1).toString());
+                    await dbHandler.updateUser(user._id, "all_time_score", (parseInt(user.all_time_score) + 1).toString());
+                    // Update Percentage
+                    await dbHandler.updateUser(user._id, "percentage", newPercentage.toString());
+                    await dbHandler.updateUser(user._id, "all_time_percentage", newAllTimePercentage.toString());
                     // Update latest match id
-                    data["latestMatch"][username.user] = match_id
-                    // Iterate leaderboard score
-                    console.log(data["leaderboard"][username.user])
-		    data["leaderboard"][username.user] = data["leaderboard"][username.user] + 1
-                    // Save to json
-                    fs.writeFileSync("/home/ec2-user/git/valorantShamingBot/valorantShamingBot/data.json", JSON.stringify(data, null, 4));
-                } else {
-                    console.log("Not bottom.")
-                }
+                    await dbHandler.updateUser(user._id, "latest_match", match_id);
+                // } else {
+                //     console.log("Not bottom.")
+                // }
             })
         })
     })

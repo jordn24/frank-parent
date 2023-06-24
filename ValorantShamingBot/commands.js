@@ -42,9 +42,10 @@ client.on('messageCreate', async message => {
 
         // Add data from database to fields
         users.forEach((user) => {
-            actFields.push({name: user.user + ":", value: "Has bottom fragged " + user.score + " time/s", raw_value: parseInt(user.score)})
+            actFields.push({name: user.user + ":", value: "Has bottom fragged " + user.score + " time/s\nWith a rate of "
+            + parseInt(user.percentage) + "%", raw_value: parseInt(user.score)})
             allTimeFields.push({name: user.user + ":", value: "Has bottom fragged " + user.all_time_score + " time/s\nWith a rate of "
-                + user.percentage, raw_value: parseInt(user.all_time_score)})
+                + parseInt(user.all_time_percentage) + "%", raw_value: parseInt(user.all_time_score)})
         })
 
         // Sort fields

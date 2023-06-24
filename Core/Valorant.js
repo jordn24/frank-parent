@@ -13,7 +13,7 @@ class Valorant {
 
     // Returns latest match id of user
     static async getLatestMatch(user, tag){    
-        let complete_url = process.env.VALORANT_BASE_API + process.env.VALORANT_MATCHES_URI + user + '/' + tag + '?filter=competitive';
+        let complete_url = process.env.VALORANT_BASE_API + process.env.VALORANT_MATCHES_URI + encodeURIComponent(user) + '/' + tag + '?filter=competitive';
         let response = await APIHandler.get(complete_url);
 
         return response.data.data[0].metadata.matchid;
