@@ -33,7 +33,7 @@ function sortFields(fields, sort) {
 
 
 client.on('messageCreate', async message => {
-    if (message.content.toLowerCase() == '!newscoreboard'){
+    if (message.content.toLowerCase() == '!scoreboard'){
 
         // Create buttons for options
         const option1Button = new MessageButton()

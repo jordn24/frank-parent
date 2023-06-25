@@ -11,8 +11,10 @@ class APIHandler {
         const response = await axios.get(url, config);
         return response;
       } catch (error) {
-        console.error('API GET request failed:', error);
+        console.error('API GET request failed');
       }
+      // Delay before retrying
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
   }
 
@@ -23,7 +25,7 @@ class APIHandler {
         const response = await axios.post(url, data, config);
         return response;
       } catch (error) {
-        console.error('API POST request failed:', error);
+        console.error('API POST request failed');
       }
       // Delay before retrying
       await new Promise(resolve => setTimeout(resolve, 1000));
@@ -39,6 +41,8 @@ class APIHandler {
       } catch (error) {
         console.error('API PUT request failed:', error);
       }
+      // Delay before retrying
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
   }
 
@@ -49,8 +53,10 @@ class APIHandler {
         const response = await axios.delete(url, config);
         return response;
       } catch (error) {
-        console.error('API DELETE request failed:', error);
+        console.error('API DELETE request failed');
       }
+      // Delay before retrying
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
   }
 }
