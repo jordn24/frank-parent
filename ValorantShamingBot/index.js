@@ -29,7 +29,7 @@ client.on('ready', async async => {
             // Get position in latest match
             getPositionInMatch(match_id, user.user).then(async (position) => {
 		        // If position is last
-                // if (position === 10 && user.latest_match !== match_id) {
+                if (position === 10 && user.latest_match !== match_id) {
                     
                     // Send message in general
                     formatted_msg = "<@" + user.disc_id + "> " + messages[Math.floor(Math.random() * messages.length)]
@@ -39,7 +39,7 @@ client.on('ready', async async => {
                     client.channels.cache.get(channelid).send(formatted_msg)
                     client.channels.cache.get(channelid).send(tracker_link)                                
 
-                    // Call Total Matches API to update DB
+                    // Call Total Matches APIs
                     let newActMatches = await APIHandler.post(process.env.WEB_TRACKERGG_API + process.env.WEB_TRACKERGG_ACT_URI + "?user=" + 
                         user.user + "&tag=" + user.tag);
 
@@ -57,17 +57,20 @@ client.on('ready', async async => {
                         newAllTimePercentage = 0;
                     }
                     
-                    // Update Mongo DB
+                    // Update Scores
                     await dbHandler.updateUser(user._id, "score", (parseInt(user.score) + 1).toString());
                     await dbHandler.updateUser(user._id, "all_time_score", (parseInt(user.all_time_score) + 1).toString());
+                    // Update Matches
+                    await dbHandler.updateUser(user._id, "matches", newActMatches.data.toString());
+                    await dbHandler.updateUser(user._id, "alltime_matches_played", newTotalMatches.data.toString());
                     // Update Percentage
                     await dbHandler.updateUser(user._id, "percentage", newPercentage.toString());
                     await dbHandler.updateUser(user._id, "all_time_percentage", newAllTimePercentage.toString());
                     // Update latest match id
                     await dbHandler.updateUser(user._id, "latest_match", match_id);
-                // } else {
-                //     console.log("Not bottom.")
-                // }
+                } else {
+                    console.log("Not bottom.")
+                }
             })
         })
     })
