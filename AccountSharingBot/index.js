@@ -59,21 +59,15 @@ client.on('message', async message => {
             setTimeout(() => msg.delete(), 5000)
         })
 
-        let targetAccounts;
+        let targetAccounts = [];
         // Get sheet data
-        sheetsHandler.getSheetData(range)
-        .then(accounts => {
-            accounts.forEach(async account => {
-                // Check rank on each account
-                let account_rank = await Valorant.getAccountRank(account[0], account[1]);
-                if (account_rank == targetRank) {
-                    targetAccounts.push(account)
-                }
-            });
+        let accounts = await sheetsHandler.getSheetData(range);
+        await accounts.forEach(async (account) => {
+            // Check rank on each account
+            if (await Valorant.getAccountRank(account[0], account[1]) === targetRank) {
+                targetAccounts.push(account);
+            }
         })
-        .catch(error => {
-            message.reply("Something went wrong with reading sheet data")
-        });
 
         if(targetAccounts.length > 0){
             let account = targetAccounts[Math.floor(Math.random() * targetAccounts.length)];
