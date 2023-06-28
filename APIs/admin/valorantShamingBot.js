@@ -10,12 +10,21 @@ router.post('/valorantShamingBot/setNewAct', async (req, res) => {
         await dbHandler.connect();
  
         let users = await dbHandler.getUsers();
+        for (var user in users) {
+            console.log(users[user].user)
+            let newPercentage =  ( ( parseInt(users[user].all_time_score) + parseInt(users[user].score) ) / ( parseInt(users[user].alltime_matches_played) + parseInt(users[user].matches_played) ) ) * 100
 
-        users.forEach(async (user) => {
-            await dbHandler.updateUser(user._id, 'all_time_score', user.all_time_score + user.score);
-            await dbHandler.updateUser(user._id, 'score', '0');
-        })
-    
+            await dbHandler.updateUser(users[user]._id, 'all_time_score', parseInt(users[user].all_time_score) + parseInt(users[user].score));
+            await dbHandler.updateUser(users[user]._id, 'score', '0');
+            await dbHandler.updateUser(users[user]._id, 'alltime_matches_played', users[user].alltime_matches_played + users[user].matches_played);
+            await dbHandler.updateUser(users[user]._id, 'matches_played', 0);
+            await dbHandler.updateUser(users[user]._id, 'percentage', "0")
+            await dbHandler.updateUser(users[user]._id, 'all_time_percentage', newPercentage.toString())
+
+            // Work out percentage difference
+            let percentageDifference = newPercentage - parseFloat(users[user].all_time_percentage)
+            await dbHandler.updateUser(users[user]._id, 'percentage_change_last_act', percentageDifference)
+        }
         res.send("Done.");
     } catch (error){
         console.error('Error:', error);

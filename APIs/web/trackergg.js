@@ -4,6 +4,7 @@ const express = require('express');
 const router = express.Router();
 const WebScraper = require('../../Core/WebHandler');
 const DatabaseHandler = require('../../Core/DatabaseHandler');
+const dbHandler = new DatabaseHandler(process.env.CONNECTION_URL);
 
 router.post('/trackergg/getTotalMatches', async (req, res) => {
     try{
@@ -20,6 +21,8 @@ router.post('/trackergg/getTotalMatches', async (req, res) => {
 
 router.post('/trackergg/getTotalMatchesFromAct3Episode5', async (req, res) => {
     try{
+        await dbHandler.connect();
+
         const scraper = new WebScraper();
         let data;
         let totalMatches = 0;
@@ -31,7 +34,6 @@ router.post('/trackergg/getTotalMatchesFromAct3Episode5', async (req, res) => {
             "/overview?season=" + id, process.env.TOTAL_MATCHES_SELECTOR);
             totalMatches = totalMatches +  parseInt(data.split(' ')[1].replace(',', ''));
         }
-        
         res.send(totalMatches.toString());
     } catch (error){
         console.error('Error:', error);

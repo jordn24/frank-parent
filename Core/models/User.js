@@ -11,7 +11,8 @@ const userSchema = new mongoose.Schema({
   percentage: String,
   matches_played: Number,
   alltime_matches_played: Number,
-  all_time_percentage: String
+  all_time_percentage: String,
+  percentage_change_last_act: Number
 });
 
 const User = mongoose.model('User', userSchema, "Users");
