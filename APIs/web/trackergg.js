@@ -44,10 +44,13 @@ router.post('/trackergg/getTotalMatchesFromAct3Episode5', async (req, res) => {
 router.post('/trackergg/getActMatches', async (req, res) => {
     try{
         const scraper = new WebScraper();
-        let data = await scraper.getTextFromElement('https://tracker.gg/valorant/profile/riot/' + req.query.user + "%23" + req.query.tag + "/overview", process.env.TOTAL_MATCHES_SELECTOR)
-        let totalMatches = data.split(' ')[1].replace(',', '')
-    
-        res.send(totalMatches);
+        let data = await scraper.getTextFromElement('https://tracker.gg/valorant/profile/riot/' + req.query.user + "%23" + req.query.tag + "/overview?season=0981a882-4e7d-371a-70c4-c3b4f46c504a", process.env.TOTAL_MATCHES_SELECTOR)
+        if(!data){
+            res.send('0');
+        } else {
+            let totalMatches = data.split(' ')[1].replace(',', '')
+            res.send(totalMatches);
+        }
     } catch (error){
         console.error('Error:', error);
         res.status(500).send('An error occurred.');
