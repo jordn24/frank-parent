@@ -11,8 +11,7 @@ const client = new Client({
   });
 
 const token = process.env.BOT_TOKEN;
-// const channelid = process.env.GENERAL_CHANNEL_ID;
-const channelid = "865432456702590978"
+const channelid = process.env.GENERAL_CHANNEL_ID;
 
 const { getLatestMatch, getPositionInMatch } = require('../Core/Valorant');
 
@@ -62,7 +61,7 @@ client.on('ready', async async => {
                 // Update Scores
                 await dbHandler.updateUser(user._id, "score", (parseInt(user.score) + 1).toString());
                 // Update Matches
-                await dbHandler.updateUser(user._id, "matches", newActMatches.data.toString());
+                await dbHandler.updateUser(user._id, "matches_played", newActMatches.data.toString());
                 // Update Percentage
                 await dbHandler.updateUser(user._id, "percentage", newPercentage.toString());
                 // Update latest match id

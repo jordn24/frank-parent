@@ -25,7 +25,7 @@ class APIHandler {
         const response = await axios.post(url, data, config);
         return response;
       } catch (error) {
-        console.error('API POST request failed');
+        console.error('API POST request failed, trying again...');
       }
       // Delay before retrying
       await new Promise(resolve => setTimeout(resolve, 1000));
