@@ -29,49 +29,53 @@ client.on('ready', async async => {
         const match_id = await getLatestMatch(user.user, user.tag);
         console.log(match_id + " is the latest match");
     
-        // Get position in latest match
-        const position = await getPositionInMatch(match_id, user.user);
-        console.log(user.user + " finished " + position);
+        // If latest match wasn't empty
+        if(match_id !== ""){
+            // Get position in latest match
+            const position = await getPositionInMatch(match_id, user.user);
+            console.log(user.user + " finished " + position);
 
-        // If position is last
-        if (position === 10 && user.latest_match !== match_id) { 
-            // Send message in general
-            formatted_msg = "<@" + user.disc_id + "> " + messages[Math.floor(Math.random() * messages.length)]
-            tracker_link = "https://tracker.gg/valorant/match/" + match_id + "?handle=" + encodeURIComponent(user.user) + "%23" + user.tag
+            // If position is last
+            if (position === 10 && user.latest_match !== match_id) { 
+                // Send message in general
+                formatted_msg = "<@" + user.disc_id + "> " + messages[Math.floor(Math.random() * messages.length)]
+                tracker_link = "https://tracker.gg/valorant/match/" + match_id + "?handle=" + encodeURIComponent(user.user) + "%23" + user.tag
 
-            // Send to channel id in config
-            client.channels.cache.get(channelid).send(formatted_msg)
-            client.channels.cache.get(channelid).send(tracker_link)                                
+                // Send to channel id in config
+                client.channels.cache.get(channelid).send(formatted_msg)
+                client.channels.cache.get(channelid).send(tracker_link)                                
 
-            // Call Act Matches APIs
-            const newActMatches = await APIHandler.post(process.env.WEB_TRACKERGG_API + process.env.WEB_TRACKERGG_ACT_URI + "?user=" +
-                user.user + "&tag=" + user.tag);
+                // Call Act Matches APIs
+                const newActMatches = await APIHandler.post(process.env.WEB_TRACKERGG_API + process.env.WEB_TRACKERGG_ACT_URI + "?user=" +
+                    user.user + "&tag=" + user.tag);
 
-            // Calculate new percentage
-            let newPercentage;
-            if(newActMatches){
-                newPercentage = (( (parseInt(user.score) + 1) / parseInt(newActMatches.data)) * 100)
-            }
-            
-            if(user.score == 0){
-                newPercentage = 0;
-            }
-            
-            if(newPercentage && newAllTimePercentage && newActMatches.data && newTotalMatches.data && user.score && user.all_time_score && match_id){
-                // Update Scores
-                await dbHandler.updateUser(user._id, "score", (parseInt(user.score) + 1).toString());
-                // Update Matches
-                await dbHandler.updateUser(user._id, "matches_played", newActMatches.data.toString());
-                // Update Percentage
-                await dbHandler.updateUser(user._id, "percentage", newPercentage.toString());
-                // Update latest match id
-                await dbHandler.updateUser(user._id, "latest_match", match_id);
+                // Calculate new percentage
+                let newPercentage;
+                if(newActMatches){
+                    newPercentage = (( (parseInt(user.score) + 1) / parseInt(newActMatches.data)) * 100)
+                }
+                
+                if(user.score == 0){
+                    newPercentage = 0;
+                }
+                
+                if(newPercentage && newAllTimePercentage && newActMatches.data && newTotalMatches.data && user.score && user.all_time_score && match_id){
+                    // Update Scores
+                    await dbHandler.updateUser(user._id, "score", (parseInt(user.score) + 1).toString());
+                    // Update Matches
+                    await dbHandler.updateUser(user._id, "matches_played", newActMatches.data.toString());
+                    // Update Percentage
+                    await dbHandler.updateUser(user._id, "percentage", newPercentage.toString());
+                    // Update latest match id
+                    await dbHandler.updateUser(user._id, "latest_match", match_id);
+                } else {
+                    console.log("Something went wrong with the data gathered... NOT UPDATING DB")
+                }
             } else {
-                console.log("Something went wrong with the data gathered... NOT UPDATING DB")
+                console.log("Not bottom.")
             }
-        } else {
-            console.log("Not bottom.")
-        }
+        }        
+
     }
     setTimeout(() => process.exit(1), 60000)
 })
