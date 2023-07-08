@@ -19,7 +19,11 @@ class Valorant {
     static async getLatestMatch(user, tag){    
         let complete_url = process.env.VALORANT_BASE_API + process.env.VALORANT_MATCHES_URI + encodeURIComponent(user) + '/' + tag + '?filter=competitive';
         let response = await APIHandler.get(complete_url);
-        return response.data.data[0].metadata.matchid;
+
+        if(response.data.data[0] != undefined){
+            return response.data.data[0].metadata.matchid;
+        }
+        return ""
     }
     
     // Returns position of user in match
