@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config( {path: '/home/ec2-user/frank/frank-parent/frank-parent/.env' });
 
 const DatabaseHandler = require('../Core/DatabaseHandler');
 const APIHandler = require('../Core/APIHandler');
