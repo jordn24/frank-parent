@@ -37,3 +37,22 @@ Starting for: DaHanky
 Connected to MongoDB
 
 Starting for: DaHanky
+Connected to MongoDB
+
+Starting for: DaHanky
+ is the latest match
+
+Starting for: Krowdexx
+913960df-0096-493a-aa85-a9e6793c4eef is the latest match
+minecraft best is being compared to krowdexx
+Krowdexx finished -1
+Not bottom.
+
+Starting for: Tash
+f64f0f5f-6ab0-4af4-9f3e-49ac629da649 is the latest match
+lettuce is being compared to tash
+Tash finished -1
+Not bottom.
+
+Starting for: Perry
+7f29ce7a-ab18-4c12-bf8d-c99156bbf4b8 is the latest match
