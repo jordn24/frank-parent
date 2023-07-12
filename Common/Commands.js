@@ -12,19 +12,13 @@ const prefix = process.env.FRANK_PREFIX;
 // When a message is received, run this code
 client.on('messageCreate', (message) => {
     if (message.content === prefix + ' help') {
-        // Create buttons for options
-        const option1Button = new MessageButton()
-        .setCustomId('gasfeebot')
-        .setLabel('Gas Fee Bot')
-        .setStyle('PRIMARY');
-
         const option2Button = new MessageButton()
         .setCustomId('accountsharingbot')
         .setLabel('Account Bot')
         .setStyle('DANGER');
         
         const buttonRow = new MessageActionRow()
-        .addComponents(option1Button, option2Button);
+        .addComponents(option2Button);
 
         const embed = new MessageEmbed()
         .setColor('#0099ff')
@@ -44,13 +38,6 @@ client.on('messageCreate', (message) => {
               embed.fields = [];
   
               switch (clickedOption) {
-                case 'gasfeebot':
-                    embed.setTitle("Gas Fee Bot");
-                    embed.addFields([
-                        {name: "Show ETH Gas Price", value: "!gas"},
-                    ]);
-                    embed.setColor('BLUE');
-                    break;
                 case 'accountsharingbot':
                     embed.setTitle("Account Sharing Commands");
                     embed.addFields([

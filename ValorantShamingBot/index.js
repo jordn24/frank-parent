@@ -11,8 +11,8 @@ const client = new Client({
   });
 
 const token = process.env.BOT_TOKEN;
-const channelid = process.env.GENERAL_CHANNEL_ID;
-
+//const channelid = process.env.GENERAL_CHANNEL_ID;
+const channelid = "865432456702590978"
 const { getLatestMatch, getPositionInMatch } = require('../Core/Valorant');
 
 client.on('ready', async async => {
@@ -51,17 +51,21 @@ client.on('ready', async async => {
 
                 // Calculate new percentage
                 let newPercentage;
-                if(newActMatches){
-                    newPercentage = (( (parseInt(user.score) + 1) / parseInt(newActMatches.data)) * 100)
+		let newScore = parseInt(user.score) + 1
+
+                if(newActMatches.data > 0){
+                    newPercentage =  newScore / newActMatches.data * 100
                 }
                 
-                if(user.score == 0){
-                    newPercentage = 0;
-                }
-                
-                if(newPercentage && newAllTimePercentage && newActMatches.data && newTotalMatches.data && user.score && user.all_time_score && match_id){
+		console.log("New Act Matches: " + newActMatches.data)
+		console.log("New Percentage: " + newPercentage)
+		console.log("New Act Matches: " +  newActMatches.data)
+		console.log("Pre Run User Score: " + newScore)
+		console.log("Match ID: " + match_id)
+
+                if(newPercentage > 0 && newActMatches.data > 0 && newScore > 0 && match_id.length > 0){
                     // Update Scores
-                    await dbHandler.updateUser(user._id, "score", (parseInt(user.score) + 1).toString());
+                    await dbHandler.updateUser(user._id, "score", newScore.toString());
                     // Update Matches
                     await dbHandler.updateUser(user._id, "matches_played", newActMatches.data.toString());
                     // Update Percentage
