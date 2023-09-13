@@ -12,6 +12,7 @@ class APIHandler {
         return response;
       } catch (error) {
         console.error('API GET request failed');
+        // console.log(error)
       }
       // Delay before retrying
       await new Promise(resolve => setTimeout(resolve, 1000));
