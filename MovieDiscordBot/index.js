@@ -301,7 +301,7 @@ async function calculateParams(input){
         language:'en-US',
         page: 1,
         sort_by: 'popularity.asc',
-        'vote_count.gte': 100,
+        'vote_count.gte': 300,
         with_original_language: 'en'
       }
 
@@ -317,6 +317,7 @@ async function calculateParams(input){
         // console.log("Found language:", foundLanguage);
         // console.log("Converted language:", convertedLang);
         queryParams["with_original_language"] = convertedLang;
+        queryParams["vote_count.gte"] = '';
     }
 
     const foundGenre = genreKeywords.find(keyword => input.includes(keyword));
@@ -339,6 +340,13 @@ client.on('message', async message => {
         const messageContent = message.content.toLowerCase();
 
         if (messageContent.includes("movie")) {
+
+            if(messageContent.includes("kieren")){
+                message.channel.send("The Mask");
+                message.channel.send("https://www.themoviedb.org/t/p/w600_and_h900_bestv2/xbbXp9px4o8Oe7IbGd0yIbla8mZ.jpg")
+                return;
+            }
+
             let url = process.env.MOVIE_API_URL;
 
             let queryParams = await calculateParams(messageContent)
@@ -380,7 +388,7 @@ client.on('message', async message => {
                 language:'en-US',
                 page: 1,
                 sort_by: 'popularity.asc',
-                'vote_count.gte': 200,
+                'vote_count.gte': 300,
                 with_original_language: 'en'
             };
 
