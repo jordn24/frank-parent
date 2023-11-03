@@ -48,7 +48,7 @@ router.post('/trackergg/getActMatches', async (req, res) => {
         if(!data){
             res.send('0');
         } else {
-            let totalMatches = data.split(' ')[1].replace(',', '')
+            let totalMatches = data.split(' ')[0].replace(',', '')
             res.send(totalMatches);
         }
     } catch (error){
